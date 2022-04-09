@@ -2,7 +2,6 @@ package com.github.manolo8.darkbot.extensions.plugins;
 
 import com.github.manolo8.darkbot.Main;
 import com.github.manolo8.darkbot.extensions.util.Version;
-import com.github.manolo8.darkbot.utils.AuthAPI;
 import com.github.manolo8.darkbot.utils.FileUtils;
 import com.github.manolo8.darkbot.utils.I18n;
 import com.google.gson.Gson;
@@ -41,12 +40,6 @@ public class PluginHandler implements API.Singleton {
     public static final String BOT_UPDATE_REQUIRED = "plugins.update_issues.bot_update";
     public static final String BOT_UPDATE = "plugins.issues.bot_update";
     public static final String MAY_NEED_UPDATE = "plugins.issues.plugin_update";
-    public static final PluginIssue PLUGIN_NOT_SIGNED = new PluginIssue("plugins.issues.signature.plugin_not_signed",
-            I18n.get("plugins.issues.signature.plugin_not_signed.desc"), PluginIssue.Level.ERROR);
-    public static final PluginIssue UNKNOWN_SIGNATURE = new PluginIssue("plugins.issues.signature.unknown_signature",
-            I18n.get( "plugins.issues.signature.unknown_signature.desc"), PluginIssue.Level.ERROR);
-    public static final PluginIssue INVALID_SIGNATURE = new PluginIssue("plugins.issues.signature.invalid_signature",
-            I18n.get("plugins.issues.signature.invalid_signature.desc"), PluginIssue.Level.ERROR);
 
     public static final File PLUGIN_FOLDER = new File("plugins"),
             PLUGIN_UPDATE_FOLDER = new File("plugins/updates"),
@@ -198,7 +191,6 @@ public class PluginHandler implements API.Singleton {
             plugin.setDefinition(readPluginDefinition(jar.getInputStream(plJson)));
             testUnique(plugin);
             testCompatibility(plugin);
-            testSignature(plugin, jar);
         }
     }
 
@@ -249,16 +241,4 @@ public class PluginHandler implements API.Singleton {
         Version simpleVer = new Version(ver.getMajor(), ver.getMinor(), ver.getPatch());
         return simpleMain.compareTo(simpleVer) > 0;
     }
-
-    private void testSignature(Plugin plugin, JarFile jar) throws IOException {
-        try {
-            Boolean signatureValid = AuthAPI.getInstance().checkPluginJarSignature(jar);
-            if (signatureValid == null) plugin.getIssues().add(PLUGIN_NOT_SIGNED);
-            else if (!signatureValid) plugin.getIssues().add(UNKNOWN_SIGNATURE);
-        } catch (SecurityException e) {
-            plugin.getIssues().add(INVALID_SIGNATURE);
-        }
-    }
-
-
 }
