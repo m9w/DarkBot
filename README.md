@@ -1,5 +1,9 @@
 # DarkBOT
 
+Simplified development of extensions
+Example: https://github.com/m9w/Plugin-Launcher-Darkbot
+
+
 How to run:
 - Clone the repository
 - Get the latest full-release on darkbot's discord https://discord.gg/uXHnZJ9
