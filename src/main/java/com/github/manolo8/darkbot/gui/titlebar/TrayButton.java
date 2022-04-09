@@ -3,6 +3,7 @@ package com.github.manolo8.darkbot.gui.titlebar;
 import com.github.manolo8.darkbot.Main;
 import com.github.manolo8.darkbot.core.manager.HeroManager;
 import com.github.manolo8.darkbot.gui.MainGui;
+import com.github.manolo8.darkbot.gui.utils.Popups;
 import com.github.manolo8.darkbot.gui.utils.UIUtils;
 import com.github.manolo8.darkbot.utils.I18n;
 import org.jetbrains.annotations.Nullable;
@@ -23,6 +24,7 @@ public class TrayButton extends TitleBarButton<JFrame> {
     // We use a JDialog to make JPopupMenu disappear when it loses focus, see https://stackoverflow.com/a/20079304
     private final JDialog dialog;
     private final @Nullable TrayIcon icon;
+    private static TrayIcon lastIcon;
 
     private boolean shownMsg;
 
@@ -45,6 +47,7 @@ public class TrayButton extends TitleBarButton<JFrame> {
         icon.addActionListener(l -> {
             SystemTray.getSystemTray().remove(icon);
             frame.setVisible(true);
+            lastIcon = null;
         });
 
         icon.addMouseListener(new MouseAdapter() {
@@ -108,6 +111,7 @@ public class TrayButton extends TitleBarButton<JFrame> {
             icon.setToolTip("DarkBot - " + username);
         try {
             SystemTray.getSystemTray().add(icon);
+            lastIcon = icon;
         } catch (Exception ex) {
             ex.printStackTrace();
             setVisible(false); // Disable minimizing to tray
@@ -118,6 +122,13 @@ public class TrayButton extends TitleBarButton<JFrame> {
             shownMsg = true;
         }
         frame.setVisible(false);
+    }
+
+    public static void showMessage(String header, String message){
+        if(lastIcon != null)
+            lastIcon.displayMessage(header, message, TrayIcon.MessageType.NONE);
+        else
+            Popups.showMessageAsync(header, message, 1);
     }
 
 }

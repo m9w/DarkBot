@@ -22,7 +22,6 @@ import eu.darkbot.api.game.other.Health;
 import eu.darkbot.api.game.other.Locatable;
 import eu.darkbot.api.game.other.Location;
 import eu.darkbot.api.game.other.LocationInfo;
-import eu.darkbot.api.game.other.Lockable;
 import eu.darkbot.api.managers.PetAPI;
 import eu.darkbot.api.utils.Inject;
 import eu.darkbot.api.utils.ItemNotEquippedException;
@@ -37,6 +36,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import static com.github.manolo8.darkbot.Main.API;
 
@@ -62,6 +62,8 @@ public class PetManager extends Gui implements PetAPI {
     private final ObjArray gearsArr = ObjArray.ofArrObj();
     private final List<Gear> gearList = new ArrayList<>();
     private final List<PetGear> newGears = new ArrayList<>();
+    private final List<Consumer<List<Gear>>> observerMobList = new ArrayList<>();
+    private Consumer<List<Gear>> consumerMobList;
 
     private final ObjArray locatorWrapper = ObjArray.ofArrObj(), locatorNpcList = ObjArray.ofArrObj();
     private final List<Gear> locatorList = new ArrayList<>();
@@ -383,7 +385,29 @@ public class PetManager extends Gui implements PetAPI {
         if (locatorNpcList.getSize() < oldSize && validUntil > System.currentTimeMillis()) return;
 
         validUntil = System.currentTimeMillis() + 100;
+
+        int hash = 0;
+        if (consumerMobList == null) hash = locatorList.hashCode();
+
         locatorNpcList.sync(locatorList, Gear::new, null);
+
+        if (consumerMobList == null || hash == locatorList.hashCode()) return;
+        consumerMobList.accept(new ArrayList<>(locatorList));
+    }
+
+    public void registerNpcListener(Consumer<List<Gear>> consumer){
+        if (!observerMobList.contains(consumer)) consumerMobList = consumer;
+        observerMobList.forEach(c -> consumerMobList = consumerMobList.andThen(c));
+        observerMobList.add(consumer);
+    }
+
+    public void unregisterNpcListener(Consumer<List<Gear>> consumer){
+        observerMobList.remove(consumer);
+        if (observerMobList.isEmpty()) consumerMobList = null;
+        else {
+            consumerMobList = observerMobList.get(0);
+            observerMobList.stream().skip(1).forEach(c -> consumerMobList = consumerMobList.andThen(c));
+        }
     }
 
     private void updatePetStats(long elementsListAddress) {
@@ -426,6 +450,11 @@ public class PetManager extends Gui implements PetAPI {
             this.name = API.readMemoryString(API.readMemoryLong(address + 200));
             this.fuzzyName = Strings.fuzzyMatcher(name);
             this.check = API.readMemoryLong(address, 208, 152, 0x10);
+        }
+
+        @Override
+        public int hashCode() {
+            return name.hashCode();
         }
     }
 
