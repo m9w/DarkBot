@@ -1,6 +1,6 @@
 # DarkBOT
 
-Simplified development of extensions
+Simplified development of extensions.
 Example: https://github.com/m9w/Plugin-Launcher-Darkbot
 
 
