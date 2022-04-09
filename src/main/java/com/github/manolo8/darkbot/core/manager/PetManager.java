@@ -407,6 +407,14 @@ public class PetManager extends Gui implements PetAPI {
             consumerMobList = observerMobList.get(0);
             observerMobList.stream().skip(1).forEach(c -> consumerMobList = consumerMobList.andThen(c));
         }
+
+        int hash = 0;
+        if (consumerMobList == null) hash = locatorList.hashCode();
+
+        locatorNpcList.sync(locatorList, Gear::new, null);
+
+        if (consumerMobList == null || hash == locatorList.hashCode()) return;
+        consumerMobList.accept(new ArrayList<>(locatorList));
     }
 
     private void updatePetStats(long elementsListAddress) {
