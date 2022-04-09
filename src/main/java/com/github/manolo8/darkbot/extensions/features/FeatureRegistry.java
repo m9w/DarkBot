@@ -7,20 +7,20 @@ import com.github.manolo8.darkbot.extensions.plugins.Plugin;
 import com.github.manolo8.darkbot.extensions.plugins.PluginHandler;
 import com.github.manolo8.darkbot.extensions.plugins.PluginListener;
 import com.github.manolo8.darkbot.utils.I18n;
-import eu.darkbot.api.config.ConfigSetting;
 import eu.darkbot.api.extensions.FeatureInfo;
 import eu.darkbot.api.extensions.PluginInfo;
 import eu.darkbot.api.managers.ExtensionsAPI;
 import eu.darkbot.api.utils.Inject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.reflections.Reflections;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.stream.Stream;
 
 public class FeatureRegistry implements PluginListener, ExtensionsAPI {
@@ -64,11 +64,32 @@ public class FeatureRegistry implements PluginListener, ExtensionsAPI {
 
     @Override
     public void afterLoad() {
+        new Reflections().getTypesAnnotatedWith(RegisterFeature.class).forEach(feature -> registerPluginFeature(null, feature));
         pluginHandler.LOADED_PLUGINS.forEach(pl ->
-                Arrays.stream(pl.getDefinition().features)
+                getFeaturesList(pl)
                         .forEach(feature -> registerPluginFeature(pl, feature)));
         pluginHandler.LOADED_PLUGINS.sort((p1, p2) -> Boolean.compare(isDisabled(p1), isDisabled(p2)));
         registryHandler.update();
+    }
+
+    private List<String> getFeaturesList(Plugin plugin) {
+        if (plugin.getDefinition().features.length != 0) return Arrays.asList(plugin.getDefinition().features);
+        URLClassLoader loader = new URLClassLoader(new URL[]{plugin.getJar()});
+        List<String> features = new LinkedList<>();
+        try (JarFile jarFile = new JarFile(plugin.getFile())) {
+            Enumeration<JarEntry> e = jarFile.entries();
+            while (e.hasMoreElements()) {
+                JarEntry jarEntry = e.nextElement();
+                if (jarEntry.getName().endsWith(".class")) {
+                    String className = jarEntry.getName().replace("/", ".").replace(".class", "");
+                    if(loader.loadClass(className).isAnnotationPresent(RegisterFeature.class))
+                        features.add(className);
+                }
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return features;
     }
 
     private boolean isDisabled(Plugin plugin) {
@@ -90,17 +111,20 @@ public class FeatureRegistry implements PluginListener, ExtensionsAPI {
         FEATURES_BY_ID.put(clazz.getCanonicalName(), new FeatureDefinition<>(null, clazz, fd -> null));
     }
 
+    private void registerPluginFeature(Plugin plugin, Class<?> feature) {
+        FeatureDefinition<?> fd = new FeatureDefinition<>(plugin, feature, configHandler::getFeatureConfig);
+        fd.addStatusListener(def -> {
+            registryHandler.update();
+            if (main.getGui() != null)
+                main.getGui().updateConfigTreeListeners();
+        });
+        fd.getIssues().addListener(iss -> registryHandler.update());
+        FEATURES_BY_ID.put(feature.getCanonicalName(), fd);
+    }
+
     private void registerPluginFeature(Plugin plugin, String clazzName) {
         try {
-            Class<?> feature = pluginHandler.PLUGIN_CLASS_LOADER.loadClass(clazzName);
-            FeatureDefinition<?> fd = new FeatureDefinition<>(plugin, feature, configHandler::getFeatureConfig);
-            fd.addStatusListener(def -> {
-                registryHandler.update();
-                if (main.getGui() != null)
-                    main.getGui().updateConfigTreeListeners();
-            });
-            fd.getIssues().addListener(iss -> registryHandler.update());
-            FEATURES_BY_ID.put(clazzName, fd);
+            registerPluginFeature(plugin, pluginHandler.PLUGIN_CLASS_LOADER.loadClass(clazzName));
         } catch (Throwable e) {
             plugin.getIssues().addWarning("bot.issue.feature.failed_to_load",
                     I18n.get("bot.issue.feature.failed_to_load.desc", clazzName, e.toString()));

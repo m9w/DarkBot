@@ -12,7 +12,7 @@ public class JTimeField extends JSpinner implements OptionEditor {
     private ConfigField field;
 
     public JTimeField() {
-        super(new SpinnerNumberModel(0, 0, 1, 0.05));
+        super(new SpinnerDateModel());
         setEditor(new DateEditor(this, "HH:mm:ss"));
 
         addChangeListener(e -> {
