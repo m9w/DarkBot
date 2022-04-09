@@ -386,7 +386,7 @@ public class PetManager extends Gui implements PetAPI {
         validUntil = System.currentTimeMillis() + 100;
 
         int hash = 0;
-        if (consumerMobList == null) hash = locatorList.hashCode();
+        if (consumerMobList != null) hash = locatorList.hashCode();
 
         locatorNpcList.sync(locatorList, Gear::new);
 
