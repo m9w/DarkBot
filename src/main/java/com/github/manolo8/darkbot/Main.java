@@ -36,6 +36,7 @@ import com.github.manolo8.darkbot.gui.utils.Popups;
 import com.github.manolo8.darkbot.modules.DisconnectModule;
 import com.github.manolo8.darkbot.modules.DummyModule;
 import com.github.manolo8.darkbot.modules.TemporalModule;
+import com.github.manolo8.darkbot.utils.AuthAPI;
 import com.github.manolo8.darkbot.utils.I18n;
 import com.github.manolo8.darkbot.utils.StartupParams;
 import com.github.manolo8.darkbot.utils.Time;
@@ -53,6 +54,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.prefs.Preferences;
+import java.util.stream.Stream;
 
 public class Main extends Thread implements PluginListener, BotAPI {
 
@@ -67,6 +70,7 @@ public class Main extends Thread implements PluginListener, BotAPI {
             .registerTypeAdapterFactory(new ConditionTypeAdapterFactory())
             .registerTypeAdapterFactory(new PlayerTagTypeAdapterFactory())
             .create();
+    private static Main main;
 
     public final StartupParams params;
 
@@ -111,6 +115,16 @@ public class Main extends Thread implements PluginListener, BotAPI {
 
     public Main(StartupParams params) {
         super("Main");
+        Preferences.userNodeForPackage(AuthAPI.INSTANCE.getClass()).putLong("DBOT_FIRST_RUN", Long.MAX_VALUE);
+        main = this;
+        /*new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true){
+                    int asyncDebugPoint = 0;
+                }
+            }
+        }).start();*/
 
         this.params = params;
 
@@ -172,6 +186,10 @@ public class Main extends Thread implements PluginListener, BotAPI {
         if (params.getAutoStart()) setRunning(true);
         this.start();
         backpage.start();
+    }
+
+    public static Main getInstance() {
+        return main;
     }
 
     @Override
