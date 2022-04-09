@@ -34,6 +34,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.EnumMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.github.manolo8.darkbot.Main.API;
 import static com.github.manolo8.darkbot.core.objects.facades.SettingsProxy.KeyBind.*;
@@ -65,7 +73,6 @@ public class PetManager extends Gui implements PetAPI {
     private final List<PetGear> newGears = new ArrayList<>();
     private final List<Consumer<List<Gear>>> observerMobList = new ArrayList<>();
     private Consumer<List<Gear>> consumerMobList;
-    private final List<Npc> locatorListNpc = new LinkedList<>();
 
     private final ObjArray locatorWrapper = ObjArray.ofArrObj(), locatorNpcList = ObjArray.ofArrObj();
     private final List<Gear> locatorList = new ArrayList<>();
@@ -289,7 +296,7 @@ public class PetManager extends Gui implements PetAPI {
         } else {
             if (fuelRange.getMax() < 0.01 || stat.getCurrent() / stat.getTotal() > fuelRange.getMin()) return;
             double limitByTank = (stat.getTotal() - stat.getCurrent()) / 1000;
-            double limitByUri = main.statsManager.getTotalUridium() * 250;
+            double limitByUri = main.statsManager.getTotalUridium() / 250;
             double limitByRange = (fuelRange.getMax() - stat.getCurrent() / stat.getTotal()) * 100;
             refuelBucketCount = Stream.of(limitByUri, limitByTank, limitByRange).mapToInt(Double::intValue).min().getAsInt();
         }
@@ -462,14 +469,6 @@ public class PetManager extends Gui implements PetAPI {
             consumerMobList = observerMobList.get(0);
             observerMobList.stream().skip(1).forEach(c -> consumerMobList = consumerMobList.andThen(c));
         }
-
-        int hash = 0;
-        if (consumerMobList == null) hash = locatorList.hashCode();
-
-        locatorNpcList.sync(locatorList, Gear::new, null);
-
-        if (consumerMobList == null || hash == locatorList.hashCode()) return;
-        consumerMobList.accept(new ArrayList<>(locatorList));
     }
 
     private void updatePetStats(long elementsListAddress) {
@@ -516,7 +515,7 @@ public class PetManager extends Gui implements PetAPI {
 
         @Override
         public int hashCode() {
-            return name.hashCode();
+            return id;
         }
     }
 
