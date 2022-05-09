@@ -85,15 +85,17 @@ public class InfosDrawer implements Drawable {
                 (main.isRunning() || !resetRefresh.getValue()
                         ? Time.toString(System.currentTimeMillis() - main.lastRefresh) : "00"),
                 Time.toString(refreshTime.getValue() * 60 * 1000L));
-
-        mg.drawString(5, 12, info, MapGraphics.StringAlign.LEFT);
+        int i = 12;
+        mg.drawString(5, i, info, MapGraphics.StringAlign.LEFT);
 
         if (main.getModule() != null) {
-            String s = (main.isRunning() && main.repairManager.isDestroyed())
-                    ? main.repairManager.getStatus()
-                    : (main.tickingModule ? main.getModule().getStatus() : main.getModule().getStoppedStatus());
+            String s;
+            if (main.isRunning() && main.repairManager.isDestroyed()) s = main.repairManager.getStatus();
+            else if (main.tickingModule) s = main.getModule().getStatus();
+            else s = main.getModule().getStoppedStatus();
 
-            mg.drawString(5, 26, s, MapGraphics.StringAlign.LEFT);
+            for (String ss : s.split("\n"))
+                mg.drawString(5, i+=14, ss, MapGraphics.StringAlign.LEFT);
         }
 
         mg.drawString(mg.getWidth() - 5, 12,
