@@ -453,7 +453,7 @@ public class PetManager extends Gui implements PetAPI {
 
         @Override
         public int hashCode() {
-            return name.hashCode();
+            return id;
         }
     }
 
