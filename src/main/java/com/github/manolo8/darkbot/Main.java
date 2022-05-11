@@ -55,7 +55,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.prefs.Preferences;
-import java.util.stream.Stream;
 
 public class Main extends Thread implements PluginListener, BotAPI {
 
@@ -70,7 +69,7 @@ public class Main extends Thread implements PluginListener, BotAPI {
             .registerTypeAdapterFactory(new ConditionTypeAdapterFactory())
             .registerTypeAdapterFactory(new PlayerTagTypeAdapterFactory())
             .create();
-    private static Main main;
+    public static Main main;
 
     public final StartupParams params;
 
