@@ -13,15 +13,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class LibSetup {
 
     private static final String BASE_URL = "https://gist.github.com/Pablete1234/2e43458bb3b644e16d146969069b1548/raw/";
     private static final Type LIB_LIST_TYPE = new TypeToken<Map<String, Lib>>(){}.getType();
+    private static final List<String> excludeList = Arrays.asList("DefaultPlugin.jar");
 
     private static Map<String, Lib> libraries;
 
@@ -42,10 +41,8 @@ public class LibSetup {
             e.printStackTrace();
             return;
         }
-
-        for (Lib lib : libraries.values()) {
-            if (lib.auto) downloadLib(lib);
-        }
+        excludeList.forEach(libraries::remove);
+        for (Lib lib : libraries.values()) if (lib.auto) downloadLib(lib);
     }
 
     public static void downloadLib(String path) {
