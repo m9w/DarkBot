@@ -275,6 +275,7 @@ public class Main extends Thread implements PluginListener, BotAPI {
     private void tickRunning() {
         guiManager.pet.tick();
         guiManager.group.tick();
+        guiManager.diminishQuests.show(false);
         checkRefresh();
         tickLogic(true);
     }
