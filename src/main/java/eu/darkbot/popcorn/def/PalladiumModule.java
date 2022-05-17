@@ -14,7 +14,7 @@ import com.github.manolo8.darkbot.modules.LootNCollectorModule;
 import com.github.manolo8.darkbot.modules.MapModule;
 import java.util.List;
 
-@RegisterFeature
+@RegisterFeature("Default plugin")
 @Feature(name = "Palladium Module", description = "Loot & collect, but when full cargo is full travels to 5-2 to sell")
 public class PalladiumModule extends LootNCollectorModule implements InstructionProvider {
     private Map SELL_MAP;
