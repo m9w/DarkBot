@@ -2,10 +2,7 @@ package com.github.manolo8.darkbot.extensions.features;
 
 import com.github.manolo8.darkbot.Main;
 import com.github.manolo8.darkbot.config.ConfigHandler;
-import com.github.manolo8.darkbot.extensions.plugins.IssueHandler;
-import com.github.manolo8.darkbot.extensions.plugins.Plugin;
-import com.github.manolo8.darkbot.extensions.plugins.PluginHandler;
-import com.github.manolo8.darkbot.extensions.plugins.PluginListener;
+import com.github.manolo8.darkbot.extensions.plugins.*;
 import com.github.manolo8.darkbot.utils.I18n;
 import eu.darkbot.api.extensions.FeatureInfo;
 import eu.darkbot.api.extensions.PluginInfo;
@@ -64,10 +61,8 @@ public class FeatureRegistry implements PluginListener, ExtensionsAPI {
 
     @Override
     public void afterLoad() {
-        new Reflections().getTypesAnnotatedWith(RegisterFeature.class).forEach(feature -> registerPluginFeature(null, feature));
-        pluginHandler.LOADED_PLUGINS.forEach(pl ->
-                getFeaturesList(pl)
-                        .forEach(feature -> registerPluginFeature(pl, feature)));
+        new Reflections().getTypesAnnotatedWith(RegisterFeature.class).forEach(feature -> registerPluginFeature(tryBuildFakePlugin(feature.getAnnotation(RegisterFeature.class)), feature));
+        pluginHandler.LOADED_PLUGINS.stream().filter(plugin -> plugin.getFile() != null).forEach(pl -> getFeaturesList(pl).forEach(feature -> registerPluginFeature(pl, feature)));
         pluginHandler.LOADED_PLUGINS.sort((p1, p2) -> Boolean.compare(isDisabled(p1), isDisabled(p2)));
         registryHandler.update();
     }
@@ -215,5 +210,20 @@ public class FeatureRegistry implements PluginListener, ExtensionsAPI {
     @Override
     public ClassLoader getClassLoader(@NotNull PluginInfo pluginInfo) {
         return pluginHandler.PLUGIN_CLASS_LOADER;
+    }
+
+    Plugin tryBuildFakePlugin(RegisterFeature feature){
+        if(feature.value().length() == 0) return null;
+        Plugin plugin = pluginHandler.LOADED_PLUGINS.stream().filter(p -> "org.marker.fake_plugin".equals(p.getBasePackage()))
+                .filter(p -> feature.value().equals(p.getName())).findFirst().orElse(null);
+        if(plugin != null) return plugin;
+        PluginDefinition pluginDefinition = new PluginDefinition();
+        pluginDefinition.name = feature.value();
+        pluginDefinition.author = feature.author();
+        pluginDefinition.basePackage = "org.marker.fake_plugin";
+        pluginDefinition.version = main.getVersion();
+        pluginHandler.LOADED_PLUGINS.add(plugin = new Plugin(null, null));
+        plugin.setDefinition(pluginDefinition);
+        return plugin;
     }
 }

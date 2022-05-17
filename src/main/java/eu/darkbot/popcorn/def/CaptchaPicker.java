@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@RegisterFeature
+@RegisterFeature("Default plugin")
 @Feature(name = "Captcha picker", description = "Picks up captcha boxes when they appear", enabledByDefault = true)
 public class CaptchaPicker extends TemporalModule implements Behaviour {
     private static final Pattern SPECIAL_REGEX = Pattern.compile("[{}()\\[\\].+*?^$\\\\|]");

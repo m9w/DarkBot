@@ -20,12 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RegisterFeature
-@Feature(
-        name = "Anti push",
-        description = "Turns off the bot if an enemy uses draw fire or is killed over X times by the same player",
-        enabledByDefault = true
-)
+@RegisterFeature("Default plugin")
+@Feature(name = "Anti push", description = "Turns off the bot if an enemy uses draw fire or is killed over X times by the same player", enabledByDefault = true)
 public class AntiPush implements Behaviour, Configurable<AntiPush.Config> {
     private MapManager mapManager;
     private RepairManager repairManager;

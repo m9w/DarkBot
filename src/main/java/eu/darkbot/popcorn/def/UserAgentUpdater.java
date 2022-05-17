@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import javax.swing.JComponent;
 
-@RegisterFeature
+@RegisterFeature("Default plugin")
 @Feature(name = "DO client updater", description = "Updates the DO client version darkbot pretends to use", enabledByDefault = true)
 public class UserAgentUpdater implements Task, Configurable<UserAgentUpdater.Config> {
     private static final String URL = "http://darkorbit-22-client.bpsecure.com/bpflashclient/windows.x64/repository/Updates.xml";
