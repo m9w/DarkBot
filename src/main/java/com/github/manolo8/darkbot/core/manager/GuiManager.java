@@ -46,6 +46,7 @@ public class GuiManager implements Manager, GameScreenAPI {
     public final Gui lostConnection;
     public final Gui connecting;
     public final Gui quests;
+    public final Gui diminishQuests;
     public final Gui minimap;
     public final Gui targetedOffers;
     public final LogoutGui logout;
@@ -95,6 +96,7 @@ public class GuiManager implements Manager, GameScreenAPI {
         this.lostConnection = register("lost_connection");
         this.connecting = register("connection");
         this.quests = register("quests");
+        this.diminishQuests = register("diminish_quests");
         this.minimap = register("minimap");
         this.targetedOffers = register("targetedOffers", TargetedOfferGui.class);
         this.logout = register("logout", LogoutGui.class);
