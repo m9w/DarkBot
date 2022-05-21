@@ -9,6 +9,8 @@ import com.github.manolo8.darkbot.core.entities.Npc;
 import com.github.manolo8.darkbot.core.entities.Pet;
 import com.github.manolo8.darkbot.core.entities.Ship;
 import com.github.manolo8.darkbot.core.objects.Gui;
+import com.github.manolo8.darkbot.core.objects.facades.SettingsProxy;
+import com.github.manolo8.darkbot.core.objects.facades.SlotBarsProxy;
 import com.github.manolo8.darkbot.core.objects.swf.ObjArray;
 import com.github.manolo8.darkbot.extensions.features.Feature;
 import com.github.manolo8.darkbot.extensions.features.handlers.PetGearSelectorHandler;
@@ -16,6 +18,7 @@ import com.github.manolo8.darkbot.gui.utils.Strings;
 import eu.darkbot.api.extensions.selectors.GearSelector;
 import eu.darkbot.api.game.entities.Entity;
 import eu.darkbot.api.game.enums.PetGear;
+import eu.darkbot.api.game.items.SelectableItem;
 import eu.darkbot.api.game.other.EntityInfo;
 import eu.darkbot.api.game.other.Health;
 import eu.darkbot.api.game.other.Locatable;
@@ -27,17 +30,11 @@ import eu.darkbot.api.utils.ItemNotEquippedException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.EnumMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static com.github.manolo8.darkbot.Main.API;
+import static com.github.manolo8.darkbot.core.objects.facades.SettingsProxy.KeyBind.*;
 
 public class PetManager extends Gui implements PetAPI {
 
@@ -52,6 +49,8 @@ public class PetManager extends Gui implements PetAPI {
     private final List<Ship> ships;
     private final Pet pet;
     private final PetGearSelectorHandler gearSelectorHandler;
+    private final SettingsProxy settingsProxy;
+    private final SlotBarsProxy slotBarsProxy;
 
     private long togglePetTime, selectModuleTime;
     private long activeUntil;
@@ -89,14 +88,15 @@ public class PetManager extends Gui implements PetAPI {
     }
 
     public PetManager(Main main, MapManager mapManager, HeroManager hero,
-                      PetGearSelectorHandler gearSelectorHandler) {
+                      PetGearSelectorHandler gearSelectorHandler, FacadeManager facadeManager) {
         this.main = main;
         this.ships = mapManager.entities.ships;
         this.pet = hero.pet;
         this.gearSelectorHandler = gearSelectorHandler;
+        this.settingsProxy = facadeManager.settings;
+        this.slotBarsProxy = facadeManager.slotBars;
 
         PetGearSupplier.updateGears(gearList);
-
     }
 
     private PetGear getPetGearToUse() {
@@ -118,17 +118,17 @@ public class PetManager extends Gui implements PetAPI {
 
         Boolean enablePet = gearSupplier.enablePet();
         boolean enabled = enablePet != null ? enablePet : isEnabled();
-
+        PetGear configGear = gearSupplier.get();
         if (active() != enabled) {
-            if (show(true)) clickToggleStatus();
+            clickToggleStatus(PetGear.PASSIVE.equals(configGear) && enabled);
             return;
         }
+        updatePetTarget();
         if (!enabled) {
             show(false);
             return;
         }
-        updatePetTarget();
-        int moduleId = gearSupplier.get().getId();
+        int moduleId = configGear.getId();
 
         if (target != null && !(target instanceof Npc) && target.playerInfo.isEnemy()) {
             moduleId = PetGear.PASSIVE.getId();
@@ -152,12 +152,36 @@ public class PetManager extends Gui implements PetAPI {
         }
         if (submoduleId == -1) selectedNpc = null;
 
-        if (selection != ModuleStatus.SELECTED
+        if (!hasCooldown(configGear) && (
+                selection != ModuleStatus.SELECTED
                 || (currentModule != null && currentModule.id != moduleId)
                 || (currentSubModule == null && submoduleIdx != -1)
-                || (currentSubModule != null && currentSubModule.id != submoduleId)) {
-            if (show(true)) this.selectModule(moduleId, submoduleIdx);
+                || (currentSubModule != null && currentSubModule.id != submoduleId))) {
+            this.selectModule(moduleId, submoduleIdx, configGear);
         } else if (System.currentTimeMillis() > this.selectModuleTime) show(false);
+    }
+
+    private boolean tryUseHotkey(PetGear configGear) {
+        boolean isGuard;
+        if ((isGuard = configGear.equals(PetGear.GUARD)) || configGear.equals(PetGear.COMBO_REPAIR)) {
+            Optional<Character> character = settingsProxy.getCharacterOf(isGuard ? PET_GUARD_MODE : PET_COMBO_REPAIR);
+            if(character.isPresent()) {
+                API.keyboardClick(character.get());
+                selection = ModuleStatus.SELECTED;
+                return true;
+            }
+        } else {
+            Optional<SelectableItem.Pet> item = getSelectableItemByGear(configGear);
+            if(item.isPresent() && slotBarsProxy.useItem(item.get()).isSuccessful()){
+                selection = ModuleStatus.SELECTED;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    Optional<SelectableItem.Pet> getSelectableItemByGear(PetGear gear){
+        return Arrays.stream(SelectableItem.Pet.values()).filter(g -> g.getGear().equals(gear)).findFirst();
     }
 
     private class NpcPick {
@@ -233,19 +257,22 @@ public class PetManager extends Gui implements PetAPI {
         return System.currentTimeMillis() < activeUntil;
     }
 
-    private void clickToggleStatus() {
+    private void clickToggleStatus(boolean isPassiveEnabling) {
         if (System.currentTimeMillis() - this.togglePetTime > 5000L) {
-            click(MAIN_BUTTON_X, MODULE_Y);
-            this.selection = ModuleStatus.NOTHING;
+            Optional<Character> character = settingsProxy.getCharacterOf(ACTIVE_PET);
+            if(character.isPresent()) API.keyboardClick(character.get());
+            else if (show(true)) click(MAIN_BUTTON_X, MODULE_Y);
+            this.selection = isPassiveEnabling ? ModuleStatus.SELECTED : ModuleStatus.NOTHING;
             this.togglePetTime = System.currentTimeMillis();
         }
     }
 
-    private void selectModule(int moduleId, int submoduleIdx) {
+    private void selectModule(int moduleId, int submoduleIdx, PetGear configGear) {
         if (System.currentTimeMillis() < this.selectModuleTime) return;
         this.selectModuleTime = System.currentTimeMillis() + 1000;
+        if (tryUseHotkey(configGear)) return;
 
-        switch (selection) {
+        if (show(true)) switch (selection) {
             case SELECTED:
             case NOTHING:
                 click(MODULES_X_MAX - 5, MODULE_Y);
