@@ -65,6 +65,7 @@ public class PetManager extends Gui implements PetAPI {
     private final List<PetGear> newGears = new ArrayList<>();
     private final List<Consumer<List<Gear>>> observerMobList = new ArrayList<>();
     private Consumer<List<Gear>> consumerMobList;
+    private final List<Npc> locatorListNpc = new LinkedList<>();
 
     private final ObjArray locatorWrapper = ObjArray.ofArrObj(), locatorNpcList = ObjArray.ofArrObj();
     private final List<Gear> locatorList = new ArrayList<>();
@@ -83,6 +84,7 @@ public class PetManager extends Gui implements PetAPI {
     private boolean repaired = true;
 
     private final Map<PetStatsType, PetStats> petStats = new EnumMap<>(PetStatsType.class);
+    private int attempts = 0;
 
     private enum ModuleStatus {
         NOTHING,
@@ -132,7 +134,7 @@ public class PetManager extends Gui implements PetAPI {
         if (!enabled) {
             show(false);
             return;
-        }
+        } else attempts = 0;
         int moduleId = configGear.getId();
 
         if (target != null && !(target instanceof Npc) && target.playerInfo.isEnemy()) {
@@ -157,7 +159,7 @@ public class PetManager extends Gui implements PetAPI {
         }
         if (submoduleId == -1) selectedNpc = null;
 
-        if (!hasCooldown(configGear) && (
+        if (!hasCooldown(configGear) && hasGear(configGear) && (
                 selection != ModuleStatus.SELECTED
                 || (currentModule != null && currentModule.id != moduleId)
                 || (currentSubModule == null && submoduleIdx != -1)
@@ -265,7 +267,7 @@ public class PetManager extends Gui implements PetAPI {
     private void clickToggleStatus(boolean isPassiveEnabling) {
         if (System.currentTimeMillis() - this.togglePetTime > 5000L) {
             Optional<Character> character = settingsProxy.getCharacterOf(ACTIVE_PET);
-            if(character.isPresent()) API.keyboardClick(character.get());
+            if(character.isPresent() && attempts++ < 2) API.keyboardClick(character.get());
             else if (show(true)) click(MAIN_BUTTON_X, MODULE_Y);
             this.selection = isPassiveEnabling ? ModuleStatus.SELECTED : ModuleStatus.NOTHING;
             this.togglePetTime = System.currentTimeMillis();
