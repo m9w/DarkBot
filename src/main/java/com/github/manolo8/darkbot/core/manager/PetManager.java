@@ -1,6 +1,7 @@
 package com.github.manolo8.darkbot.core.manager;
 
 import com.github.manolo8.darkbot.Main;
+import com.github.manolo8.darkbot.config.Config;
 import com.github.manolo8.darkbot.config.NpcExtra;
 import com.github.manolo8.darkbot.config.NpcInfo;
 import com.github.manolo8.darkbot.config.types.suppliers.PetGearSupplier;
@@ -32,6 +33,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static com.github.manolo8.darkbot.Main.API;
 import static com.github.manolo8.darkbot.core.objects.facades.SettingsProxy.KeyBind.*;
@@ -39,6 +41,7 @@ import static com.github.manolo8.darkbot.core.objects.facades.SettingsProxy.KeyB
 public class PetManager extends Gui implements PetAPI {
 
     private static final int MAIN_BUTTON_X = 30,
+            FUEL_BUTTON_X = 75,
             MODULES_X_MAX = 260,
             MODULE_Y = 135,
             MODULE_Y_OFFSET = 17,
@@ -72,6 +75,7 @@ public class PetManager extends Gui implements PetAPI {
     private Gear currentModule;   // The Module used, like Passive mode, kamikaze, or enemy locator
     private Gear currentSubModule;// The submodule used, like an npc inside enemy locator.
     private long validUntil;
+    private int refuelBucketCount = 0;
     private NpcInfo selectedNpc;
 
     private Integer gearOverride = null;
@@ -124,6 +128,7 @@ public class PetManager extends Gui implements PetAPI {
             return;
         }
         updatePetTarget();
+        fuelControl();
         if (!enabled) {
             show(false);
             return;
@@ -264,6 +269,27 @@ public class PetManager extends Gui implements PetAPI {
             else if (show(true)) click(MAIN_BUTTON_X, MODULE_Y);
             this.selection = isPassiveEnabling ? ModuleStatus.SELECTED : ModuleStatus.NOTHING;
             this.togglePetTime = System.currentTimeMillis();
+        }
+    }
+
+    private void fuelControl() {
+        Config.PercentRange fuelRange = main.config.PET.FUEL_RANGE;
+        PetStat stat = getStat(Stat.FUEL);
+        if (stat == null) return;
+        if (refuelBucketCount > 0) {
+            this.selectModuleTime = System.currentTimeMillis() + 1000;
+            if(stat.getCurrent() / stat.getTotal() > fuelRange.getMax()) refuelBucketCount = 0;
+            else if (show(true) && this.togglePetTime > 200) {
+                click(FUEL_BUTTON_X, MODULE_Y);
+                this.togglePetTime = System.currentTimeMillis();
+                refuelBucketCount--;
+            }
+        } else {
+            if (fuelRange.getMax() < 0.01 || stat.getCurrent() / stat.getTotal() > fuelRange.getMin()) return;
+            double limitByTank = (stat.getTotal() - stat.getCurrent()) / 1000;
+            double limitByUri = main.statsManager.getTotalUridium() * 250;
+            double limitByRange = (fuelRange.getMax() - stat.getCurrent() / stat.getTotal()) * 100;
+            refuelBucketCount = Stream.of(limitByUri, limitByTank, limitByRange).mapToInt(Double::intValue).min().getAsInt();
         }
     }
 

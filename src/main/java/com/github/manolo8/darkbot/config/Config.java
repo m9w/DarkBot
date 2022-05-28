@@ -166,6 +166,7 @@ public class Config implements eu.darkbot.api.config.legacy.Config {
     public static class PetSettings {
         public @Option boolean ENABLED = false;
         public @Option @Dropdown(options = PetGears.class) PetGear MODULE_ID = PetGear.PASSIVE;
+        public @Option PercentRange FUEL_RANGE = new PercentRange(0.05, 0.1);
     }
 
     public @Option GroupSettings GROUP = new GroupSettings();
