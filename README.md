@@ -12,6 +12,7 @@ How to run:
 - Add Run/Debug configuration:
   - Main class: com.github.manolo8.darkbot.Bot
   - Working directory: wherever you unzipped the release
+- For build jar run `mvn compile package`
 
 Distribution & support for the bot can be found over at discord: https://discord.gg/bEFgxCy
 
