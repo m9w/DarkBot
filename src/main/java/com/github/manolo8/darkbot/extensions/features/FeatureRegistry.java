@@ -10,7 +10,7 @@ import eu.darkbot.api.managers.ExtensionsAPI;
 import eu.darkbot.api.utils.Inject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.reflections.Reflections;
+import org.reflections8.Reflections;
 
 import java.io.IOException;
 import java.net.URL;

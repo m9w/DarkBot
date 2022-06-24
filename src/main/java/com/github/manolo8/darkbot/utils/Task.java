@@ -1,7 +1,7 @@
 package com.github.manolo8.darkbot.utils;
 
 public class Task {
-    private Runnable task;
+    private final Runnable task;
     private long runAt = -1;
     private long limitedDelay = -1;
 
@@ -18,6 +18,10 @@ public class Task {
         limitedDelay = -1;
         if (runAt == -1) this.runAt = System.currentTimeMillis() + delay;
         else if (System.currentTimeMillis() > runAt) forceExecute();
+    }
+
+    public void tick(){
+        if (runAt != -1 && System.currentTimeMillis() > runAt) forceExecute();
     }
 
     public void limit(long delay) {
