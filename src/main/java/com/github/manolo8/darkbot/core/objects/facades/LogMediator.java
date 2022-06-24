@@ -8,14 +8,17 @@ import eu.darkbot.api.events.Listener;
 import eu.darkbot.api.managers.EventBrokerAPI;
 import eu.darkbot.api.managers.GameLogAPI;
 
+import java.time.LocalDateTime;
+
 import static com.github.manolo8.darkbot.Main.API;
+import static com.github.manolo8.darkbot.utils.LogUtils.LOG_DATE;
 
 public class LogMediator extends Updatable implements GameLogAPI, Listener {
     @Deprecated
     public final Lazy<String> logs = new Lazy.NoCache<>(); // Can't cache the value, same log could appear twice
-
-    private final EventBrokerAPI eventBroker;
     private final ObjArray messageBuffer = ObjArray.ofArrStr();
+    private final EventBrokerAPI eventBroker;
+    public long serverReboot = -1;
 
     public LogMediator(EventBrokerAPI eventBroker) {
         this.eventBroker = eventBroker;
@@ -38,7 +41,9 @@ public class LogMediator extends Updatable implements GameLogAPI, Listener {
 
     @EventHandler
     public void onLogMessage(LogMessageEvent e) {
-        System.out.println(e.getMessage());
+        if(e.getMessage().equals("Server restarting...")) serverReboot = System.currentTimeMillis();
+        if(e.getMessage().endsWith("INTEX!")) serverReboot = -1;
+        System.out.println("[" + LocalDateTime.now().format(LOG_DATE) + "] " + e.getMessage());
         logs.send(e.getMessage());
     }
 

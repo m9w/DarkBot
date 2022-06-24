@@ -268,7 +268,7 @@ public class PetManager extends Gui implements PetAPI {
         if (System.currentTimeMillis() - this.togglePetTime > 5000L) {
             Optional<Character> character = settingsProxy.getCharacterOf(ACTIVE_PET);
             if(character.isPresent() && attempts++ < 2) API.keyboardClick(character.get());
-            else if (show(true)) click(MAIN_BUTTON_X, MODULE_Y);
+            else if (show(true)) {click(MAIN_BUTTON_X, MODULE_Y); attempts = 0;}
             this.selection = isPassiveEnabling ? ModuleStatus.SELECTED : ModuleStatus.NOTHING;
             this.togglePetTime = System.currentTimeMillis();
         }
