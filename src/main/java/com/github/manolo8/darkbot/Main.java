@@ -115,6 +115,7 @@ public class Main extends Thread implements PluginListener, BotAPI {
     public Main(StartupParams params) {
         super("Main");
         Preferences.userNodeForPackage(AuthAPI.INSTANCE.getClass()).putLong("DBOT_FIRST_RUN", Long.MAX_VALUE);
+        Preferences.userNodeForPackage(AuthAPI.INSTANCE.getClass()).putBoolean("DBOT_IGNORE_" + VERSION, true);
         main = this;
         /*new Thread(new Runnable() {
             @Override
