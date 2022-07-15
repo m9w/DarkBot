@@ -3,6 +3,8 @@
 Simplified development of extensions.
 Example: https://github.com/m9w/Plugin-Launcher-Darkbot
 
+Features:
+- Support autologin by `sid` and `server` - just put this props to -login file. If sid is invalid than it be replaced on actual after default autologin.
 
 How to run:
 - Clone the repository
