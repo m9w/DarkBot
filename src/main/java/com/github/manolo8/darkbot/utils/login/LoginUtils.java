@@ -73,7 +73,6 @@ public class LoginUtils {
 
         if (!isSidAutoLogin && (username == null || Strings.isEmpty(password))) {
             System.err.println("Credentials file requires username and either a password or a master password");
-            System.exit(-1);
         }
 
         LoginData loginData = new LoginData();
