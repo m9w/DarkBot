@@ -3,18 +3,31 @@ package com.github.manolo8.darkbot.utils;
 import eu.darkbot.api.API;
 import eu.darkbot.util.function.ThrowingFunction;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class StartupParams implements API.Singleton {
     private static final String COMMAND_PREFIX = "-";
+
+    public void updateSidAndServer(String sid, String server) {
+        Properties login = (Properties) startupParams.get(LaunchArg.LOGIN);
+        Path path = new File(login.getProperty("SourceFile")).toPath();
+        login.setProperty(PropertyKey.SERVER.toString(), server);
+        login.setProperty(PropertyKey.SID.toString(), sid);
+
+        try {
+            Files.write(path, Arrays.stream(PropertyKey.values())
+                    .filter(x -> login.containsKey(x.toString()))
+                    .map(x -> x + "=" + getAutoLoginValue(x))
+                    .collect(Collectors.toList()), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public enum LaunchArg {
         /**
@@ -61,7 +74,11 @@ public class StartupParams implements API.Singleton {
     }
 
     public enum PropertyKey {
-        USERNAME, PASSWORD, MASTER_PASSWORD
+        USERNAME, PASSWORD, MASTER_PASSWORD, SERVER, SID;
+        @Override
+        public String toString() {
+            return this.name().toLowerCase(Locale.ROOT);
+        }
     }
 
 
@@ -87,6 +104,7 @@ public class StartupParams implements API.Singleton {
     /* Auto login */
     private static Properties loadLoginProperties(String path) throws IOException {
         Properties p = new Properties();
+        p.setProperty("SourceFile", path);
         try (InputStreamReader reader = new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8)) {
             p.load(reader);
         }
@@ -96,12 +114,16 @@ public class StartupParams implements API.Singleton {
 
     public String getAutoLoginValue(PropertyKey key) {
         Properties p = (Properties) startupParams.get(LaunchArg.LOGIN);
-        return p.getProperty(key.name().toLowerCase(Locale.ROOT));
+        return p.getProperty(key.toString());
     }
 
     public char[] getAutoLoginMasterPassword() {
         String masterPassword = getAutoLoginValue(PropertyKey.MASTER_PASSWORD);
         return masterPassword == null ? null : masterPassword.toCharArray();
+    }
+
+    public void clearAutoLoginProp(PropertyKey key) {
+        ((Properties) startupParams.get(LaunchArg.LOGIN)).setProperty(key.toString(), "");
     }
 
     /* Other params */
