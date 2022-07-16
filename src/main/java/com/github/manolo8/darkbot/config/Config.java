@@ -1,12 +1,7 @@
 package com.github.manolo8.darkbot.config;
 
 import com.github.manolo8.darkbot.config.actions.Condition;
-import com.github.manolo8.darkbot.config.types.suppliers.BrowserApi;
-import com.github.manolo8.darkbot.config.types.suppliers.DisplayFlag;
-import com.github.manolo8.darkbot.config.types.suppliers.LanguageSupplier;
-import com.github.manolo8.darkbot.config.types.suppliers.ModuleSupplier;
-import com.github.manolo8.darkbot.config.types.suppliers.PetGears;
-import com.github.manolo8.darkbot.config.types.suppliers.ReviveLocation;
+import com.github.manolo8.darkbot.config.types.suppliers.*;
 import com.github.manolo8.darkbot.config.utils.ItemUtils;
 import com.github.manolo8.darkbot.core.manager.HookAdapter;
 import com.github.manolo8.darkbot.core.manager.StarManager;
@@ -15,13 +10,9 @@ import com.github.manolo8.darkbot.gui.MainGui;
 import com.github.manolo8.darkbot.gui.tree.editors.CharacterEditor;
 import com.github.manolo8.darkbot.gui.tree.utils.NpcTableModel;
 import com.github.manolo8.darkbot.gui.tree.utils.TableHelpers;
-import eu.darkbot.api.config.annotations.Dropdown;
+import com.github.manolo8.darkbot.utils.SystemValues;
 import eu.darkbot.api.config.annotations.Number;
-import eu.darkbot.api.config.annotations.Option;
-import eu.darkbot.api.config.annotations.Percentage;
-import eu.darkbot.api.config.annotations.Table;
-import eu.darkbot.api.config.annotations.Tag;
-import eu.darkbot.api.config.annotations.Visibility;
+import eu.darkbot.api.config.annotations.*;
 import eu.darkbot.api.config.annotations.Visibility.Level;
 import eu.darkbot.api.game.enums.PetGear;
 import eu.darkbot.api.game.items.ItemCategory;
@@ -31,25 +22,9 @@ import eu.darkbot.api.managers.HeroAPI;
 import eu.darkbot.shared.modules.LootCollectorModule;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
-import static com.github.manolo8.darkbot.config.types.suppliers.DisplayFlag.BOOSTER_AREA;
-import static com.github.manolo8.darkbot.config.types.suppliers.DisplayFlag.GROUP_AREA;
-import static com.github.manolo8.darkbot.config.types.suppliers.DisplayFlag.GROUP_NAMES;
-import static com.github.manolo8.darkbot.config.types.suppliers.DisplayFlag.HERO_NAME;
-import static com.github.manolo8.darkbot.config.types.suppliers.DisplayFlag.HP_SHIELD_NUM;
-import static com.github.manolo8.darkbot.config.types.suppliers.DisplayFlag.STATS_AREA;
-import static com.github.manolo8.darkbot.config.types.suppliers.DisplayFlag.ZONES;
-import static com.github.manolo8.darkbot.config.types.suppliers.DisplayFlag.SHOW_PET;
+import static com.github.manolo8.darkbot.config.types.suppliers.DisplayFlag.*;
 
 public class Config implements eu.darkbot.api.config.legacy.Config {
 
@@ -220,7 +195,7 @@ public class Config implements eu.darkbot.api.config.legacy.Config {
 
         public @Option @Visibility(Level.ADVANCED) APIConfig API_CONFIG = new APIConfig();
         public static class APIConfig {
-            public @Option @Dropdown BrowserApi BROWSER_API = BrowserApi.DARK_BOAT;
+            public @Option @Dropdown BrowserApi BROWSER_API = SystemValues.get(SystemValues.preferAPI);
             public @Option boolean FULLY_HIDE_API = true;
             public @Option boolean FORCE_GAME_LANGUAGE = false;
             public @Option boolean ENFORCE_HW_ACCEL = true;
