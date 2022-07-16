@@ -15,6 +15,7 @@ public interface SystemValues {
     Pair<BrowserApi, BrowserApi> preferAPI = new Pair<>(BrowserApi.DARK_BOAT, BrowserApi.TANOS_API);
     Pair<Integer, Integer> childSpriteOffset = new Pair<>(0xd0,0xe0);
     Pair<Integer, Integer> spriteSizeOffset = new Pair<>(0x18,0x20);
+    Pair<Integer, Integer> tableSizeOffset = new Pair<>(0x8,0x10);
     Pair<Integer, Integer> Box_MAGIC_NUMBER = new Pair<>(8,16);
     Pair<Integer, Integer> MapManager_NameOffset = new Pair<>(440,0x1d0);
     Pair<String, String> LoginUtils_2D_MODE = new Pair<>("2","0");

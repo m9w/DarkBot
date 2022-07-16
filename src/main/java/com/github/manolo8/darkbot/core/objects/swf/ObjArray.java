@@ -53,7 +53,7 @@ public class ObjArray extends SwfPtrCollection {
     }
 
     public static ObjArray ofSprite(boolean autoUpdatable) {
-        return new ObjArray(0x020, 0x10, 0x8, autoUpdatable);
+        return new ObjArray(SystemValues.get(SystemValues.spriteSizeOffset), SystemValues.get(SystemValues.tableSizeOffset), 0x8, autoUpdatable);
     }
 
     /**
