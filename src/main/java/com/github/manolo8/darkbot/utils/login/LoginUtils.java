@@ -36,7 +36,7 @@ public class LoginUtils {
         String lang = I18n.getLocale().getLanguage();
         if (!lang.isEmpty() && ConfigEntity.INSTANCE.getConfig().BOT_SETTINGS.API_CONFIG.FORCE_GAME_LANGUAGE)
             FORCED_PARAMS.put("lang", lang);
-        FORCED_PARAMS.put("display2d", "2");
+        FORCED_PARAMS.put("display2d", SystemValues.get(SystemValues.LoginUtils_2D_MODE));
         FORCED_PARAMS.put("autoStartEnabled", "1");
     }
 

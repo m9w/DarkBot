@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 public class OSUtil {
-    private static final OS CURRENT_OS = OS.getCurrent();
+    public static final OS CURRENT_OS = OS.getCurrent();
 
     public static OS getCurrentOs() {
         return CURRENT_OS;

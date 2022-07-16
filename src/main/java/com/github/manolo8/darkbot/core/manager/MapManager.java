@@ -17,6 +17,7 @@ import com.github.manolo8.darkbot.core.utils.EntityList;
 import com.github.manolo8.darkbot.core.utils.Lazy;
 import com.github.manolo8.darkbot.core.utils.Location;
 import com.github.manolo8.darkbot.core.utils.pathfinder.RectangleImpl;
+import com.github.manolo8.darkbot.utils.SystemValues;
 import eu.darkbot.api.PluginAPI;
 import eu.darkbot.api.game.entities.Portal;
 import eu.darkbot.api.game.other.Area;
@@ -283,7 +284,9 @@ public class MapManager implements Manager, StarSystemAPI {
     }
 
     private boolean findMarker(long spriteArray, double scale, Location result) {
-        int size = API.readMemoryInt(spriteArray, 0x40, 0x18);
+        long arrayOffset = API.readMemoryLong(spriteArray, 0x40);
+        if (arrayOffset == 0) return false;
+        int size = API.readMemoryInt(arrayOffset + SystemValues.get(SystemValues.spriteSizeOffset));
         // Always try to iterate at least once.
         // With 0 or 1 elements, it seems to be implemented as a singleton and size isn't updated.
         // With 2 or more elements, it's a linked list of elements to follow at 0x18.
@@ -309,10 +312,10 @@ public class MapManager implements Manager, StarSystemAPI {
         // Ignore if 0,0, or further away from the center of the map than corner in manhattan distance
         if ((x == 0 && y == 0) || result.distance(halfWidth, halfHeight) > halfWidth + halfHeight) return false;
 
-        String name = API.readMemoryString(API.readMemoryLong(sprite, 440, 0x10, 0x28, 0x90));
+        String name = API.readMemoryString(API.readMemoryLong(sprite, SystemValues.get(SystemValues.MapManager_NameOffset), 0x10, 0x28, 0x90));
         if (name != null && name.equals("minimapmarker")) return true;
 
-        String pointer = API.readMemoryString(API.readMemoryLong(sprite, 216, 0x10, 0x28, 0x90));
+        String pointer = API.readMemoryString(API.readMemoryLong(sprite, SystemValues.get(SystemValues.childSpriteOffset), 0x10, 0x28, 0x90));
         return pointer == null || !pointer.equals("minimapPointer");
     }
 

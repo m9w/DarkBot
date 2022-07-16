@@ -3,6 +3,7 @@ package com.github.manolo8.darkbot.core.entities;
 import com.github.manolo8.darkbot.config.BoxInfo;
 import com.github.manolo8.darkbot.config.ConfigEntity;
 import com.github.manolo8.darkbot.core.api.GameAPI;
+import com.github.manolo8.darkbot.utils.SystemValues;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
@@ -93,12 +94,7 @@ public class Box extends Entity implements eu.darkbot.api.game.entities.Box {
         }
         long data = traits.get(0);
 
-        data = API.readMemoryLong(data + 64);
-        data = API.readMemoryLong(data + 32);
-        data = API.readMemoryLong(data + 24);
-        data = API.readMemoryLong(data + 8);
-        data = API.readMemoryLong(data + 16);
-        data = API.readMemoryLong(data + 24);
+        data = API.readMemoryLong(data, 64, 32, 24, SystemValues.get(SystemValues.Box_MAGIC_NUMBER), 16, 24);
 
         type = API.readMemoryString(data);
         hash = API.readMemoryString(address, 160);
