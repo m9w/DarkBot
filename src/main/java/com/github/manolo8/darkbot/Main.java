@@ -11,16 +11,7 @@ import com.github.manolo8.darkbot.config.utils.SpecialTypeAdapter;
 import com.github.manolo8.darkbot.core.BotInstaller;
 import com.github.manolo8.darkbot.core.IDarkBotAPI;
 import com.github.manolo8.darkbot.core.api.GameAPI;
-import com.github.manolo8.darkbot.core.manager.EffectManager;
-import com.github.manolo8.darkbot.core.manager.FacadeManager;
-import com.github.manolo8.darkbot.core.manager.GuiManager;
-import com.github.manolo8.darkbot.core.manager.HeroManager;
-import com.github.manolo8.darkbot.core.manager.MapManager;
-import com.github.manolo8.darkbot.core.manager.PingManager;
-import com.github.manolo8.darkbot.core.manager.RepairManager;
-import com.github.manolo8.darkbot.core.manager.SettingsManager;
-import com.github.manolo8.darkbot.core.manager.StarManager;
-import com.github.manolo8.darkbot.core.manager.StatsManager;
+import com.github.manolo8.darkbot.core.manager.*;
 import com.github.manolo8.darkbot.core.utils.Lazy;
 import com.github.manolo8.darkbot.extensions.DarkBotPluginApiImpl;
 import com.github.manolo8.darkbot.extensions.features.FeatureDefinition;
@@ -32,6 +23,7 @@ import com.github.manolo8.darkbot.extensions.plugins.PluginUpdater;
 import com.github.manolo8.darkbot.extensions.util.VerifierChecker;
 import com.github.manolo8.darkbot.extensions.util.Version;
 import com.github.manolo8.darkbot.gui.MainGui;
+import com.github.manolo8.darkbot.gui.titlebar.AddButtonsToTitleBar;
 import com.github.manolo8.darkbot.gui.utils.Popups;
 import com.github.manolo8.darkbot.modules.DisconnectModule;
 import com.github.manolo8.darkbot.modules.DummyModule;
@@ -342,6 +334,9 @@ public class Main extends Thread implements PluginListener, BotAPI {
     }
 
     private <A extends Module> void updateCustomConfig(A module) {
+        if (module.getClass().isAnnotationPresent(AddButtonsToTitleBar.class))
+            form.setCustomTitleButtons(module);
+        else form.setCustomTitleButtons(null);
         if (module instanceof Configurable) {
             FeatureDefinition<A> fd = featureRegistry.getFeatureDefinition(module);
             if (fd != null) {

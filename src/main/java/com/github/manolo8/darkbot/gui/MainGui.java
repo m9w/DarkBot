@@ -3,15 +3,19 @@ package com.github.manolo8.darkbot.gui;
 import com.github.manolo8.darkbot.Main;
 import com.github.manolo8.darkbot.config.Config;
 import com.github.manolo8.darkbot.gui.components.ExitConfirmation;
+import com.github.manolo8.darkbot.gui.titlebar.AddButtonsToTitleBar;
 import com.github.manolo8.darkbot.gui.titlebar.MainTitleBar;
 import com.github.manolo8.darkbot.gui.utils.UIUtils;
 import com.github.manolo8.darkbot.gui.utils.window.WindowUtils;
 import eu.darkbot.api.config.ConfigSetting;
+import eu.darkbot.api.extensions.Module;
 import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -23,6 +27,7 @@ public class MainGui extends JFrame {
     private final JPanel mainPanel = new JPanel();
     private ExitConfirmation exitConfirmation;
     private MapDrawer mapDrawer;
+    private MainTitleBar titleBar;
 
     public static final Image ICON = UIUtils.getImage("icon");
     public static final int DEFAULT_WIDTH = 640, DEFAULT_HEIGHT = 480;
@@ -59,7 +64,7 @@ public class MainGui extends JFrame {
 
     private void setComponentPosition() {
         mainPanel.setLayout(new MigLayout("ins 0, gap 0, wrap 1, fill", "[]", "[][][grow]"));
-        mainPanel.add(new MainTitleBar(main, this), "grow, span");
+        mainPanel.add(titleBar = new MainTitleBar(main, this), "grow, span");
         mainPanel.add(exitConfirmation = new ExitConfirmation(), "grow, span, hidemode 2");
         mainPanel.add(mapDrawer = new MapDrawer(main), "grow, span");
     }
@@ -112,4 +117,16 @@ public class MainGui extends JFrame {
         mapDrawer.repaint();
     }
 
+    public void setCustomTitleButtons(Module module) {
+        titleBar.removeCustomButtons();
+        if(module == null) return;
+        try {
+            Method values = module.getClass().getAnnotation(AddButtonsToTitleBar.class).value().getDeclaredMethod("values");
+            values.setAccessible(true);
+            AddButtonsToTitleBar.enumButtons[] buttons = (AddButtonsToTitleBar.enumButtons[]) values.invoke(null);
+            for (AddButtonsToTitleBar.enumButtons button : buttons) titleBar.addCustomButton(this, button);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+    }
 }
