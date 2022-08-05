@@ -1,0 +1,10 @@
+{
+  "name": "PluginName",
+  "author": "m9w",
+  "version": "2.4.8",
+  "minVersion": "1.13.17 beta 99",
+  "supportedVersion": "1.13.17 beta 99",
+  "donation": "https://discord.gg/",
+  "_download": "https://gist.github.com/./plugin.json",
+  "_update": "https://gist.github.com/./plugin.json"
+}
