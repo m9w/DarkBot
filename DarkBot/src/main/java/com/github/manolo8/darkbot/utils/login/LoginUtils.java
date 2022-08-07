@@ -48,7 +48,11 @@ public class LoginUtils {
         JOptionPane pane = new JOptionPane(panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
         pane.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
 
-        Popups.showMessageSync("Login", pane, panel::setDialog);
+        Popups.of("Login", panel)
+                .options(new Object[]{})
+                .border(BorderFactory.createEmptyBorder(0, 0, 5, 0))
+                .defaultButton(panel.getLoginBtn())
+                .showSync();
 
         LoginData loginData = panel.getResult();
         if (loginData.getPreloaderUrl() == null || loginData.getParams() == null) {

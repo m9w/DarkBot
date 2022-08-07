@@ -15,11 +15,7 @@ import eu.darkbot.api.managers.EventBrokerAPI;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 public class PlayerEditor extends JPanel implements Listener {
     private final JList<PlayerInfo> playerInfoList;
@@ -152,7 +148,8 @@ public class PlayerEditor extends JPanel implements Listener {
             if (tag == null) return;
             main.config.PLAYER_TAGS.add(tag);
         } else if (players.isEmpty()) {
-            Popups.showMessageAsync(I18n.get("players.select_players.warn.title"), I18n.get("players.select_players.warn.add"), JOptionPane.INFORMATION_MESSAGE);
+            Popups.of(I18n.get("players.select_players.warn.title"),
+                    I18n.get("players.select_players.warn.add"), JOptionPane.INFORMATION_MESSAGE).showAsync();
             return;
         }
 
@@ -166,7 +163,8 @@ public class PlayerEditor extends JPanel implements Listener {
         List<PlayerInfo> players = playerInfoList.getSelectedValuesList();
 
         if (players.isEmpty()) {
-            Popups.showMessageAsync(I18n.get("players.select_players.warn.title"), I18n.get("players.select_players.warn.remove"), JOptionPane.INFORMATION_MESSAGE);
+            Popups.of(I18n.get("players.select_players.warn.title"),
+                    I18n.get("players.select_players.warn.remove"), JOptionPane.INFORMATION_MESSAGE).showAsync();
             return;
         }
         for (PlayerInfo p : players) p.removeTag(tag);
@@ -176,10 +174,11 @@ public class PlayerEditor extends JPanel implements Listener {
 
     public void deleteTag(PlayerTag tag) {
         if (tag == null) return;
-        int result = JOptionPane.showConfirmDialog(this,
-                I18n.get("players.delete_tag.confirm.msg", tag.name),
-                I18n.get("players.delete_tag.confirm.title"),
-                JOptionPane.YES_NO_OPTION);
+        int result = Popups.of(I18n.get("players.delete_tag.confirm.title"),
+                I18n.get("players.delete_tag.confirm.msg", tag.name), JOptionPane.QUESTION_MESSAGE)
+                .optionType(JOptionPane.YES_NO_OPTION)
+                .parent(this)
+                .showOptionSync();
         if (result != JOptionPane.YES_OPTION) return;
 
         main.config.PLAYER_TAGS.remove(tag);
@@ -193,14 +192,16 @@ public class PlayerEditor extends JPanel implements Listener {
     public void removePlayers() {
         List<PlayerInfo> players = playerInfoList.getSelectedValuesList();
         if (players.isEmpty()) {
-            Popups.showMessageAsync(I18n.get("players.select_players.warn.title"), I18n.get("players.select_players.warn.remove_player"), JOptionPane.INFORMATION_MESSAGE);
+            Popups.of(I18n.get("players.select_players.warn.title"),
+                    I18n.get("players.select_players.warn.remove_player"), JOptionPane.INFORMATION_MESSAGE).showAsync();
             return;
         }
 
-        int result = JOptionPane.showConfirmDialog(this,
-                I18n.get("players.remove_player.msg", players.size()),
-                I18n.get("players.remove_player.title"),
-                JOptionPane.YES_NO_OPTION);
+        int result = Popups.of(I18n.get("players.remove_player.title"),
+                I18n.get("players.remove_player.msg", players.size()), JOptionPane.QUESTION_MESSAGE)
+                .optionType(JOptionPane.YES_NO_OPTION)
+                .parent(this)
+                .showOptionSync();
         if (result != JOptionPane.YES_OPTION) return;
 
         for (PlayerInfo player : players) {
