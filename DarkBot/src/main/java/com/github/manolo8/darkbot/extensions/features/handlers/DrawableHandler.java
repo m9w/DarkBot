@@ -1,14 +1,7 @@
 package com.github.manolo8.darkbot.extensions.features.handlers;
 
 import com.github.manolo8.darkbot.extensions.features.FeatureDefinition;
-import com.github.manolo8.darkbot.gui.drawables.ConstantEntitiesDrawer;
-import com.github.manolo8.darkbot.gui.drawables.DevStuffDrawer;
-import com.github.manolo8.darkbot.gui.drawables.DynamicEntitiesDrawer;
-import com.github.manolo8.darkbot.gui.drawables.HeroDrawer;
-import com.github.manolo8.darkbot.gui.drawables.InfosDrawer;
-import com.github.manolo8.darkbot.gui.drawables.OverlayDrawer;
-import com.github.manolo8.darkbot.gui.drawables.TrailDrawer;
-import com.github.manolo8.darkbot.gui.drawables.ZonesDrawer;
+import com.github.manolo8.darkbot.gui.drawables.*;
 import eu.darkbot.api.extensions.Draw;
 import eu.darkbot.api.extensions.Drawable;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DrawableHandler extends FeatureHandler<Drawable> {
-    private static final Class<?>[] NATIVE =
+    public static final Class<?>[] NATIVE =
             new Class[]{ZonesDrawer.class, InfosDrawer.class, TrailDrawer.class, ConstantEntitiesDrawer.class,
                     DynamicEntitiesDrawer.class, HeroDrawer.class, DevStuffDrawer.class, OverlayDrawer.class};
 

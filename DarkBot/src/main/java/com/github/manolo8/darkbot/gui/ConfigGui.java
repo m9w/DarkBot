@@ -9,10 +9,10 @@ import com.github.manolo8.darkbot.gui.components.TabbedPane;
 import com.github.manolo8.darkbot.gui.players.PlayerEditor;
 import com.github.manolo8.darkbot.gui.plugins.PluginDisplay;
 import com.github.manolo8.darkbot.gui.titlebar.ConfigPicker;
-import com.github.manolo8.darkbot.gui.zones.ZonesEditor;
 import com.github.manolo8.darkbot.gui.titlebar.ConfigTitleBar;
 import com.github.manolo8.darkbot.gui.utils.UIUtils;
 import com.github.manolo8.darkbot.gui.utils.window.WindowUtils;
+import com.github.manolo8.darkbot.gui.zones.ZonesEditor;
 import eu.darkbot.api.config.ConfigSetting;
 import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.Nullable;
@@ -74,7 +74,7 @@ public class ConfigGui extends JFrame {
         zones = new ZonesEditor();
         playerEditor = new PlayerEditor();
         configPicker = new ConfigPicker();
-        pluginDisplay = new PluginDisplay();
+        pluginDisplay = GUIRouter.getInstance().getPluginDisplay();
     }
 
     private void setComponentPosition() {

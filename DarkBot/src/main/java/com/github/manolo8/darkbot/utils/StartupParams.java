@@ -3,8 +3,11 @@ package com.github.manolo8.darkbot.utils;
 import eu.darkbot.api.API;
 import eu.darkbot.util.function.ThrowingFunction;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -40,7 +43,8 @@ public class StartupParams implements API.Singleton {
         NO_OP, /** Run the bot in no-op mode (no-op api) */
         CONFIG(s -> s), /** Start the bot with a specific config */
         HIDE, /** If the bot should hide api window on start */
-        NO_WARN; /** Disable warnings about unsupported java version */
+        NO_WARN, /** Disable warnings about unsupported java version */
+        NO_GUI; /** Run without main GUI*/
 
         private final ThrowingFunction<String, ?, Exception> parser;
 

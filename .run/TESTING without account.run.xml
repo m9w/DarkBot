@@ -1,7 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="TESTING" type="Application" factoryName="Application">
     <option name="ALTERNATIVE_JRE_PATH" value="11" />
-    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="MAIN_CLASS_NAME" value="com.github.manolo8.darkbot.Bot" />
     <module name="DarkBot" />
     <option name="PROGRAM_PARAMETERS" value="-NO_OP -NO_WARN" />

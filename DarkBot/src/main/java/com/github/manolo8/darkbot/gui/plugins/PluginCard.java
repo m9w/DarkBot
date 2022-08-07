@@ -12,10 +12,7 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.font.TextAttribute;
-import java.util.Collections;
 import java.util.Locale;
-import java.util.Map;
 
 public class PluginCard extends GenericFeaturesCard {
 
@@ -26,7 +23,15 @@ public class PluginCard extends GenericFeaturesCard {
     private final Plugin plugin;
     private final PluginUpdater pluginUpdater;
 
-    PluginCard(Main main, Plugin plugin, FeatureRegistry featureRegistry) {
+    public PluginCard() {
+        progressBar = null;
+        progressLabel = null;
+        updateButton = null;
+        plugin = null;
+        pluginUpdater = null;
+    }
+
+    public PluginCard(Main main, Plugin plugin, FeatureRegistry featureRegistry) {
         setColor(plugin.getIssues().getLevel());
         plugin.getIssues().addUIListener(issues -> setColor(issues.getLevel()));
 

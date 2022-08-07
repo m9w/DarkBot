@@ -12,9 +12,11 @@ import java.io.IOException;
 
 public class Bot {
 
+    private static StartupParams params;
+
     public static void main(String[] args) throws IOException {
         // You can enable hardware acceleration via adding jvm arg: -Dsun.java2d.opengl=True
-
+        params = new StartupParams(args);
         if (System.console() == null
                 && Bot.class.getProtectionDomain().getCodeSource().getLocation().getPath().endsWith(".jar")) {
             LogUtils.setOutputToFile();
@@ -30,10 +32,9 @@ public class Bot {
             e.printStackTrace();
         }
         LibSetup.setupLibraries();
-        StartupParams params = new StartupParams(args);
 
         checkJavaVersion(params);
-        SwingUtilities.invokeLater(() -> new Main(params));
+        SwingUtilities.invokeLater(Main::new);
     }
 
     private static void checkJavaVersion(StartupParams params) {
@@ -49,4 +50,7 @@ public class Bot {
         }
     }
 
+    static StartupParams getParams(){
+        return params;
+    }
 }

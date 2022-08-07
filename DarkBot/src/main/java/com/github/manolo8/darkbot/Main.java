@@ -22,7 +22,7 @@ import com.github.manolo8.darkbot.extensions.plugins.PluginListener;
 import com.github.manolo8.darkbot.extensions.plugins.PluginUpdater;
 import com.github.manolo8.darkbot.extensions.util.VerifierChecker;
 import com.github.manolo8.darkbot.extensions.util.Version;
-import com.github.manolo8.darkbot.gui.MainGui;
+import com.github.manolo8.darkbot.gui.GUIRouter;
 import com.github.manolo8.darkbot.gui.titlebar.AddButtonsToTitleBar;
 import com.github.manolo8.darkbot.gui.utils.Popups;
 import com.github.manolo8.darkbot.modules.DisconnectModule;
@@ -63,7 +63,7 @@ public class Main extends Thread implements PluginListener, BotAPI {
             .create();
     public static Main main;
 
-    public final StartupParams params;
+    public static final StartupParams params = Bot.getParams();
 
     public ConfigManager configManager = new ConfigManager();
     public ConfigHandler configHandler;
@@ -89,7 +89,7 @@ public class Main extends Thread implements PluginListener, BotAPI {
     public final FeatureRegistry featureRegistry;
     public final RepairManager repairManager;
 
-    private final MainGui form;
+    private final GUIRouter.MainGui form;
     private final BotInstaller botInstaller;
 
     public com.github.manolo8.darkbot.core.itf.Module module; // Legacy module, kept for old plugin compatibility
@@ -104,7 +104,7 @@ public class Main extends Thread implements PluginListener, BotAPI {
 
     private volatile boolean running;
 
-    public Main(StartupParams params) {
+    public Main() {
         super("Main");
         Preferences.userNodeForPackage(AuthAPI.INSTANCE.getClass()).putLong("DBOT_FIRST_RUN", Long.MAX_VALUE);
         Preferences.userNodeForPackage(AuthAPI.INSTANCE.getClass()).putBoolean("DBOT_IGNORE_" + VERSION, true);
@@ -117,8 +117,6 @@ public class Main extends Thread implements PluginListener, BotAPI {
                 }
             }
         }).start();*/
-
-        this.params = params;
 
         // The order here is a bit tricky, because generating the config tree
         // requires i18n being configured with a locale, but the locale is
@@ -168,7 +166,7 @@ public class Main extends Thread implements PluginListener, BotAPI {
         this.pluginHandler.updatePluginsSync();
         this.pluginHandler.addListener(this);
 
-        this.form = new MainGui(this);
+        this.form = GUIRouter.getInstance().getGUI(this);
         this.pluginUpdater.scheduleUpdateChecker();
 
         if (configManager.getConfigFailed())
@@ -397,7 +395,7 @@ public class Main extends Thread implements PluginListener, BotAPI {
         this.configChange.send(config);
     }
 
-    public MainGui getGui() {
+    public GUIRouter.MainGui getGui() {
         return form;
     }
 

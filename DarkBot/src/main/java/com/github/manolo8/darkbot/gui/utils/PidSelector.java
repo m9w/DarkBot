@@ -1,6 +1,7 @@
 package com.github.manolo8.darkbot.gui.utils;
 
 import com.github.manolo8.darkbot.core.api.GameAPI;
+import com.github.manolo8.darkbot.gui.GUIRouter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,7 +9,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class PidSelector extends JComboBox<Integer> {
+public class PidSelector extends JComboBox<Integer> implements GUIRouter.PidSelector {
 
     public PidSelector(GameAPI.Window.Proc[] procs) {
         super(Arrays.stream(procs).map(GameAPI.Window.Proc::getPid).toArray(Integer[]::new));

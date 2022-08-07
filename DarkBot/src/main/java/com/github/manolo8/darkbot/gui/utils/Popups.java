@@ -1,5 +1,6 @@
 package com.github.manolo8.darkbot.gui.utils;
 
+import com.github.manolo8.darkbot.gui.GUIRouter;
 import com.github.manolo8.darkbot.gui.MainGui;
 import org.intellij.lang.annotations.MagicConstant;
 
@@ -184,8 +185,8 @@ public class Popups {
 
         public Object showSync() {
             try {
-                if (SwingUtilities.isEventDispatchThread()) show();
-                else SwingUtilities.invokeAndWait(this::show);
+                if (GUIRouter.getInstance().getPopups().isEventDispatchThread()) show();
+                else GUIRouter.getInstance().getPopups().invokeAndWait(this::show);
             } catch (InterruptedException | InvocationTargetException e) {
                 e.printStackTrace();
             }
@@ -209,7 +210,7 @@ public class Popups {
         }
 
         public void showAsync() {
-            SwingUtilities.invokeLater(this::show);
+            GUIRouter.getInstance().getPopups().invokeLater(this::show);
         }
 
         private void show() {

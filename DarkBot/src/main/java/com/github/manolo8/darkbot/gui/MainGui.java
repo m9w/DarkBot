@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class MainGui extends JFrame {
+public class MainGui extends GUIRouter.MainGui {
 
     private final Main main;
     private final ConfigGui configGui;

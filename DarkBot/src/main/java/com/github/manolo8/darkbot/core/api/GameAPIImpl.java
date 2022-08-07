@@ -2,7 +2,7 @@ package com.github.manolo8.darkbot.core.api;
 
 import com.github.manolo8.darkbot.core.IDarkBotAPI;
 import com.github.manolo8.darkbot.core.manager.HeroManager;
-import com.github.manolo8.darkbot.gui.utils.PidSelector;
+import com.github.manolo8.darkbot.gui.GUIRouter;
 import com.github.manolo8.darkbot.gui.utils.Popups;
 import com.github.manolo8.darkbot.utils.StartupParams;
 import com.github.manolo8.darkbot.utils.login.LoginData;
@@ -157,7 +157,7 @@ public class GameAPIImpl<
         if (hasCapability(GameAPI.Capability.BACKGROUND_ONLY)) return;
 
         if (hasCapability(GameAPI.Capability.ATTACH)) {
-            PidSelector pidSelector = new PidSelector(window.getProcesses());
+            GUIRouter.PidSelector pidSelector = GUIRouter.getInstance().getPidSelector(window.getProcesses());
 
             int result = Popups.of("Select flash process", pidSelector, JOptionPane.QUESTION_MESSAGE)
                     .optionType(JOptionPane.OK_CANCEL_OPTION)

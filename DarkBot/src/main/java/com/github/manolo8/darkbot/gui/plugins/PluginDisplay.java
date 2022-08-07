@@ -5,6 +5,7 @@ import com.github.manolo8.darkbot.extensions.plugins.Plugin;
 import com.github.manolo8.darkbot.extensions.plugins.PluginHandler;
 import com.github.manolo8.darkbot.extensions.plugins.PluginListener;
 import com.github.manolo8.darkbot.extensions.plugins.PluginUpdater;
+import com.github.manolo8.darkbot.gui.GUIRouter;
 import com.github.manolo8.darkbot.gui.components.MainButton;
 import com.github.manolo8.darkbot.gui.utils.UIUtils;
 import net.miginfocom.swing.MigLayout;
@@ -64,7 +65,7 @@ public class PluginDisplay extends JPanel implements PluginListener {
         pluginPanel.add(new NativeCard(main, main.featureRegistry));
 
         Stream.concat(pluginHandler.FAILED_PLUGINS.stream(), pluginHandler.LOADED_PLUGINS.stream())
-                .map(pl -> new PluginCard(main, pl, main.featureRegistry))
+                .map(pl -> GUIRouter.getInstance().getPluginCard(main, pl, main.featureRegistry))
                 .forEach(pluginPanel::add);
 
         if (!pluginHandler.LOADING_EXCEPTIONS.isEmpty() || !pluginHandler.FAILED_PLUGINS.isEmpty())
