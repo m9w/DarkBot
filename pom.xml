@@ -5,15 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.darkbot</groupId>
-    <artifactId>All_DarkBot</artifactId>
+    <artifactId>DarkBotProject</artifactId>
     <packaging>pom</packaging>
     <version>master-SNAPSHOT</version>
 
     <modules>
-        <module>DarkBotAPI/shared</module>
-        <module>DarkBotAPI/api</module>
-        <module>DarkBotAPI/util</module>
-        <module>DarkBotAPI/impl</module>
+        <module>DarkBotAPI</module>
         <module>DarkBot</module>
         <module>Plugin</module>
     </modules>

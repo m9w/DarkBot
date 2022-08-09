@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>All_DarkBot</artifactId>
+        <artifactId>DarkBotProject</artifactId>
         <groupId>eu.darkbot</groupId>
         <version>master-SNAPSHOT</version>
     </parent>
@@ -13,30 +13,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>eu.darkbot.DarkBotAPI</groupId>
-            <artifactId>darkbot-api</artifactId>
-            <version>master-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>eu.darkbot.DarkBotAPI</groupId>
-            <artifactId>darkbot-impl</artifactId>
-            <version>master-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>eu.darkbot.DarkBotAPI</groupId>
-            <artifactId>darkbot-shared</artifactId>
-            <version>master-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>eu.darkbot.DarkBotAPI</groupId>
-            <artifactId>darkbot-util</artifactId>
-            <version>master-SNAPSHOT</version>
+            <groupId>eu.darkbot</groupId>
+            <artifactId>DarkBotAPI</artifactId>
+            <version>master</version>
             <scope>compile</scope>
         </dependency>
 
