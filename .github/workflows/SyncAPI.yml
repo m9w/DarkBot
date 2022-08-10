@@ -17,6 +17,7 @@ jobs:
           ref: ${{ env.api_branch }}
       - run: rm -rf *
       - run: ls -a
+      - run: git fetch origin
       - run: git branch -a
       - run: git checkout master -- $api_dir
       - run: mv $api_dir/* .
