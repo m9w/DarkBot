@@ -31,7 +31,7 @@ jobs:
           exit 0
           fi
       - run: export version=$(grep -oP '(?<=<API\.version>).*?(?=</API.version>)' pom.xml)
-      - run: git tag -d APIvLAST
+      - run: git tag -d APIvLAST || true
       - run: export lastversion=$(git tag -l APIv* | cut -c 5- | sort -r --version-sort --field-separator=. | head -n 1)
       - run: |
           if [[ $version == $lastversion ]]; then
