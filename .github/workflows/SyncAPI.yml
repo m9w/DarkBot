@@ -1,0 +1,50 @@
+name: SyncAPI
+
+on:
+  push:
+    branches: [ "master" ]
+    
+env:
+  api_branch: api
+  api_dir: DarkBotAPI
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ env.api_branch }}
+          
+      - name: "Sync API"
+        run: | 
+          rm -rf *
+          git fetch --all
+          git checkout -f remotes/origin/master -- $api_dir
+          mv $api_dir/* .
+          rm -rf $api_dir
+          sed -i -e '/<parent>/,/<\/parent>/d' pom.xml
+          git add -A
+          export changes=$(git diff --cached --numstat | wc -l)
+          if [ $changes -eq 0 ]; then
+          echo "Changes not found"
+          exit 0
+          fi
+          version=$(grep -oP '(?<=<API\.version>).*?(?=</API.version>)' pom.xml)
+          git tag -d APIvLAST || true
+          export lastversion=$(git tag -l APIv* | cut -c 5- | sort -r --version-sort --field-separator=. | head -n 1)
+          if [[ $version == $lastversion ]]; then
+          echo "Tag APIv$version already exist!"
+          git tag -d APIv$version
+          fi
+          thisversion=$((git tag -l APIv* | cut -c 5- ; echo $version) | cat | sort -r --version-sort --field-separator=. | head -n 1)
+          if [[ $version != $thisversion ]]; then
+          echo "APIv$version version is less than last version!"
+          exit -1
+          fi
+          git config --global user.email "workflow@darbot.eu"
+          git config --global user.name "Autosync API bot"
+          git commit -a -m "Automatic update to v$version from master branch"
+          git tag APIv$version HEAD 
+          git tag APIvLAST HEAD
+          git push origin $api_branch -f --tags
