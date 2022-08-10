@@ -45,7 +45,8 @@ jobs:
           git config --global user.email "workflow@darbot.eu"
           git config --global user.name "Autosync API bot"
           git commit -a -m "Automatic update to v$version from master branch"
+          git push origin $api_branch -f
+          git push origin --tags
           git tag APIv$version HEAD 
           git tag APIvLAST HEAD
-          git push origin $api_branch -f
           git push origin --tags
