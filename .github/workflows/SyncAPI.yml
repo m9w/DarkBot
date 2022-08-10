@@ -18,6 +18,7 @@ jobs:
       - run: | 
           rm -rf *
           git fetch --all -f
+          git tag
           git checkout remotes/origin/master -- $api_dir
           mv $api_dir/* .
           rm -rf $api_dir
