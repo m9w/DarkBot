@@ -15,39 +15,37 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: ${{ env.api_branch }}
-      - run: rm -rf *
-      - run: ls -a
-      - run: git fetch origin
-      - run: git branch -a
-      - run: git checkout remotes/origin/master -- $api_dir
-      - run: mv $api_dir/* .
-      - run: rm -rf $api_dir
-      - run: sed -i -e '/<parent>/,/<\/parent>/d' pom.xml
-      - run: git add -A
-      - run: export changes=$(git diff --cached --numstat | wc -l)
-      - run: |
+      - run: | 
+          rm -rf *
+          ls -a
+          git fetch origin
+          git branch -a
+          git checkout remotes/origin/master -- $api_dir
+          mv $api_dir/* .
+          rm -rf $api_dir
+          sed -i -e '/<parent>/,/<\/parent>/d' pom.xml
+          git add -A
+          export changes=$(git diff --cached --numstat | wc -l)
           if [ $changes -eq 0 ]; then
           echo "Changes not found"
           exit 0
           fi
-      - run: export version=$(grep -oP '(?<=<API\.version>).*?(?=</API.version>)' pom.xml)
-      - run: git tag -d APIvLAST || true
-      - run: export lastversion=$(git tag -l APIv* | cut -c 5- | sort -r --version-sort --field-separator=. | head -n 1)
-      - run: |
+          version=$(grep -oP '(?<=<API\.version>).*?(?=</API.version>)' pom.xml)
+          git tag -d APIvLAST || true
+          export lastversion=$(git tag -l APIv* | cut -c 5- | sort -r --version-sort --field-separator=. | head -n 1)
           if [[ $version == $lastversion ]]; then
           echo "Tag APIv$version already exist!"
           git tag -d APIv$version
           fi
-      - run: export thisversion=$((git tag -l APIv* | cut -c 5- ; echo $version) | cat | sort -r --version-sort --field-separator=. | head -n 1)
-      - run: |
+          thisversion=$((git tag -l APIv* | cut -c 5- ; echo $version) | cat | sort -r --version-sort --field-separator=. | head -n 1)
           if [[ $version != $thisversion ]]; then
           echo "APIv$version version is less than last version!"
           exit -1
           fi
-      - run: git config --global user.email "workflow@darbot.eu"
-      - run: git config --global user.name "Autosync API bot"
-      - run: git commit -a -m "Automatic update to v$version from master branch"
-      - run: git tag APIv$version HEAD 
-      - run: git tag APIvLAST HEAD
-      - run: git push origin $api_branch -f
-      - run: git push origin --tags
+          git config --global user.email "workflow@darbot.eu"
+          git config --global user.name "Autosync API bot"
+          git commit -a -m "Automatic update to v$version from master branch"
+          git tag APIv$version HEAD 
+          git tag APIvLAST HEAD
+          git push origin $api_branch -f
+          git push origin --tags
