@@ -16,9 +16,10 @@ jobs:
         with:
           ref: ${{ env.api_branch }}
           
-      - run: rm -rf *
-      #- run: git fetch --all
-      - run: | 
+      - name: "Sync API"
+        run: | 
+          rm -rf *
+          git fetch --all
           git checkout -f remotes/origin/master -- $api_dir
           mv $api_dir/* .
           rm -rf $api_dir
