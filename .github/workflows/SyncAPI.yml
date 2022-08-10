@@ -19,7 +19,7 @@ jobs:
       - run: ls -a
       - run: git fetch origin
       - run: git branch -a
-      - run: git checkout master -- $api_dir
+      - run: git checkout remotes/origin/master -- $api_dir
       - run: mv $api_dir/* .
       - run: rm -rf $api_dir
       - run: sed -i -e '/<parent>/,/<\/parent>/d' pom.xml
