@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: ${{ env.api_branch }}
-      - run: -rf *
+      - run: rm -rf *
       - run: git checkout master -- $api_dir
       - run: mv $api_dir/* .
       - run: rm -rf $api_dir
