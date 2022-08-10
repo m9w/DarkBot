@@ -1,6 +1,6 @@
 # DarkBotAPI
 
-This branch contain API and automatically pull changes from master branch...
+This branch contain API and automatically pull changes from master branch....
 
 All versions available https://github.com/m9w/RealFreeDarkBot/tags with prefix `APIv`
 
