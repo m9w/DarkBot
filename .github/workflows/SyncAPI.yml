@@ -17,7 +17,8 @@ jobs:
           ref: ${{ env.api_branch }}
           
       - run: rm -rf *
-      - run: git fetch --all -f
+      - run: git fetch --all
+      - run: git fetch --tags
       - run: git tag
       - run: | 
           git checkout remotes/origin/master -- $api_dir
