@@ -3,8 +3,6 @@ package eu.darkbot.shared.legacy;
 import eu.darkbot.api.API;
 import eu.darkbot.api.extensions.Module;
 
-import static jdk.javadoc.doclet.DocletEnvironment.ModuleMode.API;
-
 /**
  * This API exists to close the gap between legacy written modules that have not yet
  * been adapted to work with the new API, without adding a need for a strong dependency
